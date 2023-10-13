@@ -2,12 +2,10 @@ const store = {};
 const patients = new Map();
 
 export default {
-  run: (data, patientId) => {
+  run: (_data, patientId) => {
     patients.set(patientId, true);
   },
   runFollowUp: (followUp, patientId) => {
-    // we have found a careplan (cervicalCancerCarePlan) so we need to increment on the patient id 
-    // need to split out the run from run followups in future
     if (followUp.followUpStatus || (followUp.arvDrugs && Object.keys(followUp.arvDrugs).length !== 0)) {
       if (store[patientId]) store[patientId] += 1;
       else store[patientId] = 1;
