@@ -1,0 +1,15 @@
+{
+  "name": "elastic-checker",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Compare fhir-enrich-reports data against fhir-raw index to get descriptive statistics based on a facility",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@elastic/elasticsearch": "7.3"
+  }
+}
