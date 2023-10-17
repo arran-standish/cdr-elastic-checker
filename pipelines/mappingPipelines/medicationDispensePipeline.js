@@ -29,7 +29,7 @@ export default {
     for (const difference of Object.values(store)) {
       if (difference > 0) positiveDispense += difference;
       if (difference < 0) negativeDispense += difference;
-    } 
+    }
 
     console.log(`a total of ${positiveDispense} medication dispenses are not deleted in fhir-enrich`);
     console.log(`a total of ${negativeDispense} medication dispenses are missing in fhir-enrich`);
