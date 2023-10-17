@@ -1,15 +1,21 @@
-import { registerPipeline, runPipelines } from './pipeline.js';
 import { runEnrichPipelines } from './extractorPipelines/fhir-enrich-reports.js';
 import { runRawPipelines } from './extractorPipelines/fhir-raw.js';
-// make this a glob that you just import all files under that folder
-import patientPipeline from './mappingPipelines/patientPipeline.js';
-import careplanPipeline from './mappingPipelines/careplanPipeline.js';
-import medicationDispensePipeline from './mappingPipelines/medicationDispensePipeline.js';
-import medicationStatementPipeline from './mappingPipelines/medicationStatementPipeline.js';
+import { PatientPipeline }  from './mappingPipelines/patientPipeline.js';
+import { CareplanPipeline } from './mappingPipelines/careplanPipeline.js';
+import { MedicationDispensePipeline } from './mappingPipelines/medicationDispensePipeline.js';
+import { MedicationStatementPipeline } from './mappingPipelines/medicationStatementPipeline.js';
 
-registerPipeline(patientPipeline);
-registerPipeline(careplanPipeline);
-registerPipeline(medicationDispensePipeline);
-registerPipeline(medicationStatementPipeline);
+const pipelines = new Set();
+const patientPipeline = new PatientPipeline();
+pipelines.add(patientPipeline);
+pipelines.add(new CareplanPipeline());
+pipelines.add(new MedicationDispensePipeline());
+pipelines.add(new MedicationStatementPipeline());
 
-export { runPipelines, runEnrichPipelines, runRawPipelines };
+async function execute(healthFacilityId) {
+  await runEnrichPipelines(healthFacilityId, pipelines);
+  patientPipeline.emitPatientStore();
+  await runRawPipelines(pipelines)
+}
+
+export { execute };

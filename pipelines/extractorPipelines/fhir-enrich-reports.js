@@ -1,7 +1,6 @@
 import { executeQuery } from '../../elastic/query.js';
-import { pipelines } from '../pipeline.js';
 
-export async function runEnrichPipelines(healthFacilityId) {
+export async function runEnrichPipelines(healthFacilityId, pipelines) {
   const query = healthFacilityId 
     ? { term: { "facility.HFUID": healthFacilityId } } 
     : { match_all: {} };

@@ -1,9 +1,8 @@
-import { BasePipeline } from "./basePipeline";
+import { BasePipeline } from './basePipeline.js';
 
 export class PatientPipeline extends BasePipeline {
   constructor() {
-    // set high priority so patients pipeline always runs first
-    super('fhir-raw-patient', 1);
+    super('fhir-raw-patient');
   }
 
   run(_data, patientId) {
@@ -12,16 +11,16 @@ export class PatientPipeline extends BasePipeline {
   }
 
   runRaw(data) {
-    // rework the pipeline runners so you can call PatientPipeline.emit before running the raw pipelines
-    // since you don't need to have the patients list during the enrich process
-    this.mappingPipelineEmitter.emit('patients', this.patients)
-
     const patientId = data.id;
 
     // not a patient in this facility
     if (!this.patients.has(patientId)) return;
     
     this.store.setOrIncrementKey(patientId, -1);
+  }
+
+  emitPatientStore() {
+    this.mappingPipelineEmitter.emit('patients', this.patients);
   }
 
   reduce() {

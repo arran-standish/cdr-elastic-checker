@@ -1,7 +1,6 @@
 import { executeQuery } from '../../elastic/query.js';
-import { pipelines } from '../pipeline.js';
 
-export async function runRawPipelines() {
+export async function runRawPipelines(pipelines) {
   const query = { match_all: {} };
   
   for (const pipeline of pipelines) {

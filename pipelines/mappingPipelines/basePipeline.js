@@ -4,13 +4,12 @@ const mappingPipelineEmitter = new EventEmitter();
 export class BasePipeline {
   #mappingPipelineEmitter;
 
-  constructor(rawIndex, priority = 999) {
+  constructor(rawIndex) {
     if (this.constructor == BasePipeline) {
       throw new Error('BasePipeline is an abstact class');
     }
     
     this.rawIndex = rawIndex;
-    this.priority = priority;
     this.store = new Map();
     this.patients = new Map();
     this.#mappingPipelineEmitter = mappingPipelineEmitter;

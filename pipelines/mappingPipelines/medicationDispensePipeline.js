@@ -1,4 +1,4 @@
-import { BasePipeline } from "./basePipeline";
+import { BasePipeline } from './basePipeline.js';
 
 export class MedicationDispensePipeline extends BasePipeline {
   constructor() {

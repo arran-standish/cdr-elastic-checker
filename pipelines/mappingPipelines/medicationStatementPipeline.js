@@ -1,4 +1,4 @@
-import { BasePipeline } from "./basePipeline";
+import { BasePipeline } from './basePipeline.js';
 
 function isMatchingMedicationStatement(data) {
   if (data.reasonCode && data.reasonCode[0].coding[0].code === 'arv-treatment') return true;
