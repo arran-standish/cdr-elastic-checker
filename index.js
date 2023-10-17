@@ -1,8 +1,8 @@
-import { fhirEnrichRunner, fhirRawRunner } from './pipelines/index.js';
+import { runEnrichPipelines, runRawPipelines } from './pipelines/index.js';
 
 async function main() {
-  await fhirEnrichRunner('NEopQPE8Low');
-  await fhirRawRunner();
+  await runEnrichPipelines('NEopQPE8Low');
+  await runRawPipelines();
 }
 
 main();
