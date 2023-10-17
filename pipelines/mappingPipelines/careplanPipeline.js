@@ -1,14 +1,12 @@
-const store = {};
+const store = new Map();
 const patients = new Map();
 const patientLatestHivCareplanId = new Map();
 
 export default {
   run: (data, patientId) => {
     // we have found a careplan (hivPositiveTracking) so we need to increment on the patient id 
-    if (data.hivPositiveTracking && Object.keys(data.hivPositiveTracking).length !== 0) {
-      if (store[patientId]) store[patientId] += 1;
-      else store[patientId] = 1;
-
+    if (data.hivPositiveTracking && !Object.isEmpty(data.hivPositiveTracking)) {
+      store.setOrIncrementKey(patientId);
       patientLatestHivCareplanId.set(patientId, data.hivPositiveTracking.fhirID);
     }
 
@@ -19,9 +17,8 @@ export default {
   },
   runFollowUp: (followUp, patientId) => {
     // we have found a careplan (cervicalCancerCarePlan) so we need to increment on the patient id 
-    if (followUp.cervicalScreening && Object.keys(followUp.cervicalScreening).length !== 0) {
-      if (store[patientId]) store[patientId] += 1;
-      else store[patientId] = 1;
+    if (followUp.cervicalScreening && !Object.isEmpty(followUp.cervicalScreening)) {
+      store.setOrIncrementKey(patientId);
     }
   },
   rawIndex: 'fhir-raw-careplan',
@@ -36,18 +33,16 @@ export default {
     // since old ones are still in fhir-raw but have been overwritten in fhir-enrich
     if (careplanType === 'hiv-positive-tracking') {
       if (patientLatestHivCareplanId.get(patientId) === data.id) {
-        if (store[patientId]) store[patientId] -= 1;
-        else store[patientId] = -1;
+        store.setOrIncrementKey(patientId, -1);
       }
     } else {
-      if (store[patientId]) store[patientId] -= 1;
-      else store[patientId] = -1;
+      store.setOrIncrementKey(patientId, -1);
     }
   },
   reduce: () => {
     let positiveCareplans = 0;
     let negativeCareplans = 0;
-    for (const difference of Object.values(store)) {
+    for (const difference of store.values()) {
       if (difference > 0) positiveCareplans += difference;
       if (difference < 0) negativeCareplans += difference;
     } 

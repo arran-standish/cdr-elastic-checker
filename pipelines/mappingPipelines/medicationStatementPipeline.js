@@ -1,4 +1,4 @@
-const store = {};
+const store = new Map();
 const patients = new Map();
 
 function isMatchingMedicationStatement(data) {
@@ -24,29 +24,24 @@ export default {
     patients.set(patientId, true);
   },
   runFollowUp: (followUp, patientId) => {
-    if (followUp.arvTreatmentStarted && Object.keys(followUp.arvTreatmentStarted).length !== 0) {
-      if (store[patientId]) store[patientId] += 1;
-      else store[patientId] = 1;
+    if (followUp.arvTreatmentStarted && !Object.isEmpty(followUp.arvTreatmentStarted)) {
+      store.setOrIncrementKey(patientId);
     }
     
-    if (followUp.tbScreening && Object.keys(followUp.tbScreening).length !== 0) {
-      if (store[patientId]) store[patientId] += 1;
-      else store[patientId] = 1;
+    if (followUp.tbScreening && !Object.isEmpty(followUp.tbScreening)) {
+      store.setOrIncrementKey(patientId);
     }
     
-    if (followUp.tbTreatment && Object.keys(followUp.tbTreatment).length !== 0) {
-      if (store[patientId]) store[patientId] += 1;
-      else store[patientId] = 1;
+    if (followUp.tbTreatment && !Object.isEmpty(followUp.tbTreatment)) {
+      store.setOrIncrementKey(patientId);
     }
     
-    if (followUp.tbCotrimoxazolDrugs && Object.keys(followUp.tbCotrimoxazolDrugs).length !== 0) {
-      if (store[patientId]) store[patientId] += 1;
-      else store[patientId] = 1;
+    if (followUp.tbCotrimoxazolDrugs && !Object.isEmpty(followUp.tbCotrimoxazolDrugs)) {
+      store.setOrIncrementKey(patientId);
     }
 
-    if (followUp.tbFluconazoleDrugs && Object.keys(followUp.tbFluconazoleDrugs).length !== 0) {
-      if (store[patientId]) store[patientId] += 1;
-      else store[patientId] = 1;
+    if (followUp.tbFluconazoleDrugs && !Object.isEmpty(followUp.tbFluconazoleDrugs)) {
+      store.setOrIncrementKey(patientId);
     }
   },
   rawIndex: 'fhir-raw-medicationstatement',
@@ -56,8 +51,7 @@ export default {
     // if not a patient in the facility or not a actioned statement type continue
     if (!patients.has(patientId) || !isMatchingMedicationStatement(data)) return;
 
-    if (store[patientId]) store[patientId] -= 1;
-    else store[patientId] = -1;
+    store.setOrIncrementKey(patientId, -1);
   },
   reduce: () => {
     let positive = 0;
@@ -69,6 +63,5 @@ export default {
 
     console.log(`a total of ${positive} medication statements are not deleted in fhir-enrich`);
     console.log(`a total of ${negative} medication statements are missing in fhir-enrich`);
-    console.log(JSON.stringify(Object.keys(store).filter(key => store[key] < 0)));
   }
 };

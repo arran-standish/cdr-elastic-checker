@@ -1,4 +1,4 @@
-const store = {};
+const store = new Map();
 const patients = new Map();
 
 export default {
@@ -6,9 +6,8 @@ export default {
     patients.set(patientId, true);
   },
   runFollowUp: (followUp, patientId) => {
-    if (followUp.followUpStatus || (followUp.arvDrugs && Object.keys(followUp.arvDrugs).length !== 0)) {
-      if (store[patientId]) store[patientId] += 1;
-      else store[patientId] = 1;
+    if (followUp.followUpStatus || (followUp.arvDrugs && !Object.isEmpty(followUp.arvDrugs))) {
+      store.setOrIncrementKey(patientId);
     }
   },
   rawIndex: 'fhir-raw-medicationdispense',
@@ -20,13 +19,12 @@ export default {
 
     // not much logic here since all dispense should be in followups
     // so decrement if we match a followup to a dispense
-    if (store[patientId]) store[patientId] -= 1;
-    else store[patientId] = -1;
+    store.setOrIncrementKey(patientId, -1);
   },
   reduce: () => {
     let positiveDispense = 0;
     let negativeDispense = 0;
-    for (const difference of Object.values(store)) {
+    for (const difference of store.values()) {
       if (difference > 0) positiveDispense += difference;
       if (difference < 0) negativeDispense += difference;
     }

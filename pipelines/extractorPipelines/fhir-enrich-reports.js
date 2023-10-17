@@ -18,7 +18,7 @@ export async function runEnrichPipelines(healthFacilityId) {
       pipeline.run(data, patientId)
 
       if (data.followUps && data.followUps.length > 0) {
-        for (const followup of hit._source.followUps) {
+        for (const followup of data.followUps) {
           pipeline.runFollowUp(followup, patientId);
         }
       }

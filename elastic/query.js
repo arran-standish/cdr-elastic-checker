@@ -1,4 +1,4 @@
-import { client } from '../../elastic/connection.js';
+import { client } from './connection.js';
 
 export async function executeQuery(index, query, unitOfWork) {
   let processCounter = 0;
