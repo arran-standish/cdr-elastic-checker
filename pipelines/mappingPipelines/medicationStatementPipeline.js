@@ -1,5 +1,4 @@
-const store = new Map();
-const patients = new Map();
+import { BasePipeline } from "./basePipeline";
 
 function isMatchingMedicationStatement(data) {
   if (data.reasonCode && data.reasonCode[0].coding[0].code === 'arv-treatment') return true;
@@ -19,49 +18,43 @@ function isMatchingMedicationStatement(data) {
   return false;
 }
 
-export default {
-  run: (_data, patientId) => {
-    patients.set(patientId, true);
-  },
-  runFollowUp: (followUp, patientId) => {
+export class MedicationStatementPipeline extends BasePipeline {
+  constructor() {
+    super('fhir-raw-medicationstatement');
+  }
+
+  runFollowUp(followUp, patientId) {
     if (followUp.arvTreatmentStarted && !Object.isEmpty(followUp.arvTreatmentStarted)) {
-      store.setOrIncrementKey(patientId);
+      this.store.setOrIncrementKey(patientId);
     }
     
     if (followUp.tbScreening && !Object.isEmpty(followUp.tbScreening)) {
-      store.setOrIncrementKey(patientId);
+      this.store.setOrIncrementKey(patientId);
     }
     
     if (followUp.tbTreatment && !Object.isEmpty(followUp.tbTreatment)) {
-      store.setOrIncrementKey(patientId);
+      this.store.setOrIncrementKey(patientId);
     }
     
     if (followUp.tbCotrimoxazolDrugs && !Object.isEmpty(followUp.tbCotrimoxazolDrugs)) {
-      store.setOrIncrementKey(patientId);
+      this.store.setOrIncrementKey(patientId);
     }
 
     if (followUp.tbFluconazoleDrugs && !Object.isEmpty(followUp.tbFluconazoleDrugs)) {
-      store.setOrIncrementKey(patientId);
+      this.store.setOrIncrementKey(patientId);
     }
-  },
-  rawIndex: 'fhir-raw-medicationstatement',
-  runRaw: (data) => {
+  }
+
+  runRaw(data) {
     const patientId = data.subject.reference.replace('Patient/', '');
 
     // if not a patient in the facility or not a actioned statement type continue
-    if (!patients.has(patientId) || !isMatchingMedicationStatement(data)) return;
+    if (!this.patients.has(patientId) || !isMatchingMedicationStatement(data)) return;
 
-    store.setOrIncrementKey(patientId, -1);
-  },
-  reduce: () => {
-    let positive = 0;
-    let negative = 0;
-    for (const difference of Object.values(store)) {
-      if (difference > 0) positive += difference;
-      if (difference < 0) negative += difference;
-    }
-
-    console.log(`a total of ${positive} medication statements are not deleted in fhir-enrich`);
-    console.log(`a total of ${negative} medication statements are missing in fhir-enrich`);
+    this.store.setOrIncrementKey(patientId, -1);
   }
-};
+
+  reduce() {
+    super.reduce('medication statements');
+  }
+}

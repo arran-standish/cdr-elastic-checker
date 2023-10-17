@@ -1,30 +1,30 @@
-const store = new Map();
-const patients = new Map();
+import { BasePipeline } from "./basePipeline";
 
-export default {
-  run: (_data, patientId) => {
-    store.setOrIncrementKey(patientId);
-    patients.set(patientId, true);
-  },
-  runFollowUp: (_followUp, _patientId) => { return; },
-  rawIndex: 'fhir-raw-patient',
-  runRaw: (data) => {
+export class PatientPipeline extends BasePipeline {
+  constructor() {
+    // set high priority so patients pipeline always runs first
+    super('fhir-raw-patient', 1);
+  }
+
+  run(_data, patientId) {
+    this.store.setOrIncrementKey(patientId);
+    this.patients.set(patientId, true);
+  }
+
+  runRaw(data) {
+    // rework the pipeline runners so you can call PatientPipeline.emit before running the raw pipelines
+    // since you don't need to have the patients list during the enrich process
+    this.mappingPipelineEmitter.emit('patients', this.patients)
+
     const patientId = data.id;
 
     // not a patient in this facility
-    if (!patients.has(patientId)) return;
+    if (!this.patients.has(patientId)) return;
     
-    store.setOrIncrementKey(patientId, -1);
-  },
-  reduce: () => {
-    let positiveCareplans = 0;
-    let negativeCareplans = 0;
-    for (const difference of store.values()) {
-      if (difference > 0) positiveCareplans += difference;
-      if (difference < 0) negativeCareplans += difference;
-    } 
-
-    console.log(`a total of ${positiveCareplans} patients are not deleted in fhir-enrich`);
-    console.log(`a total of ${negativeCareplans} patients are missing in fhir-enrich`);
+    this.store.setOrIncrementKey(patientId, -1);
   }
-};
+
+  reduce() {
+    super.reduce('patients');
+  }
+}
