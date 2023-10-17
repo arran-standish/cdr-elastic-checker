@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   elastic-enrich-reference:
-    image: node:erbium-alpine
+    image: node:gallium-alpine
     networks:
       elastic_public:
     environment:
