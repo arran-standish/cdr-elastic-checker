@@ -47,4 +47,12 @@ export class BasePipeline {
     console.log(`a total of ${positive} ${resource} are not deleted in fhir-enrich`);
     console.log(`a total of ${negative} ${resource} are missing in fhir-enrich`);
   }
+
+  clear() {
+    this.store.clear();
+    // don't clear patients since this reference is shared across all pipelines
+    // so clearing would clear it on still to be run pipelines
+    // instead just clear the reference
+    this.patients = null;
+  }
 }

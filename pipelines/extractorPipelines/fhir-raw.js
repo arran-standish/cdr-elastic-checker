@@ -10,7 +10,7 @@ export async function runRawPipelines(pipelines) {
       }
     });
     
-    // needs to be in a place that makes sense
     pipeline.reduce();
+    pipeline.clear();
   }
 }
