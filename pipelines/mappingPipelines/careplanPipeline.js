@@ -10,7 +10,9 @@ export class CareplanPipeline extends BasePipeline {
     // we have found a careplan (hivPositiveTracking) so we need to increment on the patient id 
     if (data.hivPositiveTracking && !Object.isEmpty(data.hivPositiveTracking)) {
       this.store.setOrIncrementKey(patientId);
-      this.patientLatestHivCareplanId.set(patientId, data.hivPositiveTracking.fhirID);
+      const latestHivCareplanId = data.hivPositiveTracking.fhirID;
+      this.patientLatestHivCareplanId.set(patientId, latestHivCareplanId);
+      this.mappingPipelineEmitter.emit('hiv-careplan', patientId, latestHivCareplanId);
     }
   }
 
@@ -41,5 +43,10 @@ export class CareplanPipeline extends BasePipeline {
 
   reduce() {
     super.reduce('careplans');
+  }
+
+  clear() {
+    super.clear();
+    this.patientLatestHivCareplanId.clear();
   }
 }
