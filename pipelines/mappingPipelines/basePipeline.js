@@ -33,7 +33,8 @@ export class BasePipeline {
   }
 
   runRaw() {
-    throw new Error("Method 'runRaw()' must be implemented");
+    if (this.patients.isEmpty())
+      throw new Error('Patients map is empty, did the Patient pipeline run and emit its event?');
   }
 
   reduce(resource = '') {

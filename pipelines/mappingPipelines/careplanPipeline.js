@@ -22,6 +22,7 @@ export class CareplanPipeline extends BasePipeline {
   }
 
   runRaw(data) {
+    super.runRaw();
     const patientId = data.subject.reference.replace('Patient/', '');
     const careplanType = data.category[0].coding[0].code;
 

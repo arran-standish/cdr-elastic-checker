@@ -46,6 +46,7 @@ export class MedicationStatementPipeline extends BasePipeline {
   }
 
   runRaw(data) {
+    super.runRaw();
     const patientId = data.subject.reference.replace('Patient/', '');
 
     // if not a patient in the facility or not a actioned statement type continue

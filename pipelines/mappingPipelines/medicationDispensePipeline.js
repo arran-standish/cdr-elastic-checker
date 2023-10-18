@@ -12,6 +12,7 @@ export class MedicationDispensePipeline extends BasePipeline {
   }
 
   runRaw(data) {
+    super.runRaw();
     const patientId = data.subject.reference.replace('Patient/', '');
 
     if (!this.patients.has(patientId)) return;

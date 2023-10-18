@@ -11,6 +11,7 @@ export class PatientPipeline extends BasePipeline {
   }
 
   runRaw(data) {
+    super.runRaw();
     const patientId = data.id;
 
     // not a patient in this facility
