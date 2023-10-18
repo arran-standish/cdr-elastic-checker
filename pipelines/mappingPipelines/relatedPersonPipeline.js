@@ -38,6 +38,7 @@ export class RelatedPersonPipeline extends BasePipeline {
   }
 
   clear() {
+    super.clear();
     this.#relatedPersonIds.clear();
     this.mappingPipelineEmitter.removeListener('related-person', this.#childEvent);
   }

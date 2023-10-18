@@ -14,6 +14,7 @@ function isMatchingQuestionnaire(data) {
 }
 
 export class QuestionnaireResponsePipeline extends BasePipeline {
+  #contactScreenProcessed = new Map();
   constructor() {
     super('fhir-raw-questionnaireresponse');
   }
@@ -21,6 +22,8 @@ export class QuestionnaireResponsePipeline extends BasePipeline {
   run(data, patientId) {
     if (data.indexCaseContactScreening && !Object.isEmpty(data.indexCaseContactScreening)) {
       this.store.setOrIncrementKey(patientId);
+      // since the fhir-id is not stored can only check if we get at least 1 instance
+      this.#contactScreenProcessed.set(patientId, true);
     }
     // note we ignore data.indexCaseContact here since the parent relatedPerson pipeline handles it
   }
@@ -51,6 +54,13 @@ export class QuestionnaireResponsePipeline extends BasePipeline {
     if (data.questionnaire === 'IndexCaseFamilyContact') {
       const relatedPersonId = data.source.reference.replace('RelatedPerson/', '');
       this.mappingPipelineEmitter.emit('related-person', relatedPersonId, patientId);
+    } else if (data.questionnaire === 'IndexCaseContactScreening' ) {
+      if (this.#contactScreenProcessed.get(patientId)) {
+        this.store.setOrIncrementKey(patientId, -1);
+        // we have found at least 1 instance so stop tracking the others
+        // since we only have 1 high level indexCaseContactScreening in fhir-enrich
+        this.#contactScreenProcessed.set(patientId, false);
+      }
     } else {
       this.store.setOrIncrementKey(patientId, -1);
     }
@@ -58,5 +68,10 @@ export class QuestionnaireResponsePipeline extends BasePipeline {
 
   reduce() {
     super.reduce('questionnaire responses');
+  }
+
+  clear() {
+    super.clear();
+    this.#contactScreenProcessed.clear();
   }
 }

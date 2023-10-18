@@ -14,7 +14,7 @@ export async function runEnrichPipelines(healthFacilityId, pipelines) {
   const followUpRunner = (pipeline, followup, patientId) => {
     pipeline.runFollowUp(followup, patientId);
     if (pipeline.child)
-      followUpRunner(pipeline.child, data, patientId);
+      followUpRunner(pipeline.child, followup, patientId);
   }
   
   // ... O(N^3) although pipelines should be fairly small so more like O(N^2)
