@@ -6,15 +6,17 @@ import { MedicationDispensePipeline } from './mappingPipelines/medicationDispens
 import { MedicationStatementPipeline } from './mappingPipelines/medicationStatementPipeline.js';
 import { ServiceRequestPipeline } from './mappingPipelines/serviceRequestPipeline.js';
 import { RelatedPersonPipeline } from './mappingPipelines/relatedPersonPipeline.js';
+import { QuestionnaireResponsePipeline } from './mappingPipelines/questionnaireResponsePipeline.js';
 
 const pipelines = new Set();
 const patientPipeline = new PatientPipeline();
+
 pipelines.add(patientPipeline);
 pipelines.add(new CareplanPipeline());
 pipelines.add(new MedicationDispensePipeline());
 pipelines.add(new MedicationStatementPipeline());
 pipelines.add(new ServiceRequestPipeline());
-pipelines.add(new RelatedPersonPipeline());
+pipelines.add(new RelatedPersonPipeline(new QuestionnaireResponsePipeline()));
 
 async function execute(healthFacilityId) {
   await runEnrichPipelines(healthFacilityId, pipelines);

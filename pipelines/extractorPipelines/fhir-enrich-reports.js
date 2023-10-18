@@ -5,6 +5,18 @@ export async function runEnrichPipelines(healthFacilityId, pipelines) {
     ? { term: { "facility.HFUID": healthFacilityId } } 
     : { match_all: {} };
 
+  const mainRunner = (pipeline, data, patientId) => {
+    pipeline.run(data, patientId);
+    if (pipeline.child)
+      mainRunner(pipeline.child, data, patientId);
+  }
+
+  const followUpRunner = (pipeline, followup, patientId) => {
+    pipeline.runFollowUp(followup, patientId);
+    if (pipeline.child)
+      followUpRunner(pipeline.child, data, patientId);
+  }
+  
   // ... O(N^3) although pipelines should be fairly small so more like O(N^2)
   // Alternative is to loop through followups multiple times which probably increases time due to data nature
   await executeQuery('fhir-enrich-reports', query, (hit) => {
@@ -14,11 +26,12 @@ export async function runEnrichPipelines(healthFacilityId, pipelines) {
 
     for (const pipeline of pipelines) {
       const patientId = data.patient.fhirID;
-      pipeline.run(data, patientId)
+
+      mainRunner(pipeline, data, patientId);
 
       if (data.followUps && data.followUps.length > 0) {
         for (const followup of data.followUps) {
-          pipeline.runFollowUp(followup, patientId);
+          followUpRunner(pipeline, followup, patientId)
         }
       }
     }

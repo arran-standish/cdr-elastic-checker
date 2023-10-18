@@ -3,13 +3,15 @@ const mappingPipelineEmitter = new EventEmitter();
 
 export class BasePipeline {
   #mappingPipelineEmitter;
+  #child;
 
-  constructor(rawIndex) {
+  constructor(rawIndex, child = null) {
     if (this.constructor == BasePipeline) {
       throw new Error('BasePipeline is an abstact class');
     }
     
     this.rawIndex = rawIndex;
+    this.#child = child;
     this.store = new Map();
     this.patients = new Map();
     this.#mappingPipelineEmitter = mappingPipelineEmitter;
@@ -22,6 +24,10 @@ export class BasePipeline {
 
   get mappingPipelineEmitter() {
     return this.#mappingPipelineEmitter;
+  }
+
+  get child() {
+    return this.#child;
   }
 
   run(_data, _patientId) {
