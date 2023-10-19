@@ -9,6 +9,7 @@ import { RelatedPersonPipeline } from './mappingPipelines/relatedPersonPipeline.
 import { QuestionnaireResponsePipeline } from './mappingPipelines/questionnaireResponsePipeline.js';
 import { EncounterPipeline } from './mappingPipelines/encounterPipeline.js';
 import { DiagnosticReportPipeline } from './mappingPipelines/diagnosticReportPipeline.js';
+import { ObservationPipeline } from './mappingPipelines/observationPipeline.js';
 
 const pipelines = new Set();
 const patientPipeline = new PatientPipeline();
@@ -21,6 +22,7 @@ pipelines.add(new ServiceRequestPipeline());
 pipelines.add(new RelatedPersonPipeline(new QuestionnaireResponsePipeline()));
 pipelines.add(new EncounterPipeline());
 pipelines.add(new DiagnosticReportPipeline());
+pipelines.add(new ObservationPipeline());
 
 async function execute(healthFacilityId) {
   await runEnrichPipelines(healthFacilityId, pipelines);
