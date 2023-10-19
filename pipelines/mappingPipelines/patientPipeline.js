@@ -2,7 +2,7 @@ import { BasePipeline } from './basePipeline.js';
 
 export class PatientPipeline extends BasePipeline {
   constructor() {
-    super('fhir-raw-patient');
+    super('patient');
   }
 
   run(_data, patientId) {
@@ -22,9 +22,5 @@ export class PatientPipeline extends BasePipeline {
 
   emitPatientStore() {
     this.mappingPipelineEmitter.emit('patients', this.patients);
-  }
-
-  reduce() {
-    super.reduce('patients');
   }
 }

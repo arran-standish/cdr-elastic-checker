@@ -2,7 +2,7 @@ import { BasePipeline } from './basePipeline.js';
 
 export class ServiceRequestPipeline extends BasePipeline {
   constructor() {
-    super('fhir-raw-servicerequest');
+    super('servicerequest');
     this.patientLatestHivCareplanId = new Map();
     this.mappingPipelineEmitter.on('hiv-careplan', (patientId, careplanId) => {
       this.patientLatestHivCareplanId.set(patientId, careplanId);
@@ -29,10 +29,6 @@ export class ServiceRequestPipeline extends BasePipeline {
     // we only want to consider a hit if it is for the current active hiv careplan
     // since the older service requests are still in fhir-raw but should not be counted
     if (careplanId === basedOnCarePlan) this.store.setOrIncrementKey(patientId, -1);
-  }
-
-  reduce() {
-    super.reduce('service requests');
   }
 
   clear() {

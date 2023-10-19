@@ -2,7 +2,7 @@ import { BasePipeline } from './basePipeline.js';
 
 export class DiagnosticReportPipeline extends BasePipeline {
   constructor() {
-    super('fhir-raw-diagnosticreport');
+    super('diagnosticreport');
   }
 
   runFollowUp(followUp, patientId) {
@@ -22,9 +22,5 @@ export class DiagnosticReportPipeline extends BasePipeline {
     if (!this.patients.has(patientId) || data.code.coding[0].code !== '315124004') return;
 
     this.store.setOrIncrementKey(patientId, -1);
-  }
-
-  reduce() {
-    super.reduce('diagnostic reports')
   }
 }

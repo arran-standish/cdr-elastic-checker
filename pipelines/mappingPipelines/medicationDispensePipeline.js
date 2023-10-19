@@ -2,7 +2,7 @@ import { BasePipeline } from './basePipeline.js';
 
 export class MedicationDispensePipeline extends BasePipeline {
   constructor() {
-    super('fhir-raw-medicationdispense');
+    super('medicationdispense');
   }
 
   runFollowUp(followUp, patientId) {
@@ -18,9 +18,5 @@ export class MedicationDispensePipeline extends BasePipeline {
     if (!this.patients.has(patientId)) return;
 
     this.store.setOrIncrementKey(patientId, -1);
-  }
-
-  reduce() {
-    super.reduce('medication dispenses')
   }
 }

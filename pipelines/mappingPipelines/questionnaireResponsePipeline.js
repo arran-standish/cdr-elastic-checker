@@ -16,7 +16,7 @@ function isMatchingQuestionnaire(data) {
 export class QuestionnaireResponsePipeline extends BasePipeline {
   #contactScreenProcessed = new Map();
   constructor() {
-    super('fhir-raw-questionnaireresponse');
+    super('questionnaireresponse');
   }
 
   run(data, patientId) {
@@ -64,10 +64,6 @@ export class QuestionnaireResponsePipeline extends BasePipeline {
     } else {
       this.store.setOrIncrementKey(patientId, -1);
     }
-  }
-
-  reduce() {
-    super.reduce('questionnaire responses');
   }
 
   clear() {

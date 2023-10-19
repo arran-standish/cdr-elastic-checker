@@ -20,7 +20,7 @@ function isMatchingMedicationStatement(data) {
 
 export class MedicationStatementPipeline extends BasePipeline {
   constructor() {
-    super('fhir-raw-medicationstatement');
+    super('medicationstatement');
   }
 
   runFollowUp(followUp, patientId) {
@@ -53,9 +53,5 @@ export class MedicationStatementPipeline extends BasePipeline {
     if (!this.patients.has(patientId) || !isMatchingMedicationStatement(data)) return;
 
     this.store.setOrIncrementKey(patientId, -1);
-  }
-
-  reduce() {
-    super.reduce('medication statements');
   }
 }

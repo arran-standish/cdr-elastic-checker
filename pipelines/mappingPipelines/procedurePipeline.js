@@ -25,7 +25,7 @@ function isMatchingObservation(data) {
 
 export class ProcedurePipeline extends BasePipeline {
   constructor() {
-    super('fhir-raw-procedure');
+    super('procedure');
   }
 
   runFollowUp(followUp, patientId) {
@@ -58,9 +58,5 @@ export class ProcedurePipeline extends BasePipeline {
     if (!this.patients.has(patientId) || !isMatchingObservation(data)) return;
 
     this.store.setOrIncrementKey(patientId, -1);
-  }
-
-  reduce() {
-    super.reduce('procedures');
   }
 }

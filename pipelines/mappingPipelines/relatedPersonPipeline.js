@@ -13,7 +13,7 @@ export class RelatedPersonPipeline extends BasePipeline {
 
   constructor(child) {
     if (!child) throw new Error('RelatedPersonPipeline depends on QuestionnaireResponsePipeline, did you pass in the child?');
-    super('fhir-raw-relatedperson', child);
+    super('relatedperson', child);
     this.mappingPipelineEmitter.on('related-person', this.#childEvent);
   }
 
@@ -31,10 +31,6 @@ export class RelatedPersonPipeline extends BasePipeline {
     // remember which related persons have already been accounted for
     this.#relatedPersonIds.set(data.id, patientId);
     this.store.setOrIncrementKey(patientId, -1);
-  }
-
-  reduce() {
-    super.reduce('related persons');
   }
 
   clear() {

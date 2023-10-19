@@ -4,13 +4,15 @@ const mappingPipelineEmitter = new EventEmitter();
 export class BasePipeline {
   #mappingPipelineEmitter;
   #child;
+  #resourceType;
 
-  constructor(rawIndex, child = null) {
+  constructor(resourceType, child = null) {
     if (this.constructor == BasePipeline) {
       throw new Error('BasePipeline is an abstact class');
     }
     
-    this.rawIndex = rawIndex;
+    this.rawIndex = `fhir-raw-${resourceType}`;
+    this.#resourceType = resourceType;
     this.#child = child;
     this.store = new Map();
     this.patients = new Map();
@@ -43,7 +45,7 @@ export class BasePipeline {
       throw new Error('Patients map is empty, did the Patient pipeline run and emit its event?');
   }
 
-  reduce(resource = '') {
+  reduce() {
     let positive = 0;
     let negative = 0;
     for (const difference of this.store.values()) {
@@ -51,8 +53,8 @@ export class BasePipeline {
       if (difference < 0) negative += difference;
     } 
 
-    console.log(`a total of ${positive} ${resource} are not deleted in fhir-enrich`);
-    console.log(`a total of ${negative} ${resource} are missing in fhir-enrich`);
+    console.log(`a total of ${positive} ${this.#resourceType} are not deleted in fhir-enrich`);
+    console.log(`a total of ${negative} ${this.#resourceType} are missing in fhir-enrich`);
   }
 
   clear() {

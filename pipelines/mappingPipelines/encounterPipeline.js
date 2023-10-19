@@ -2,7 +2,7 @@ import { BasePipeline } from './basePipeline.js';
 
 export class EncounterPipeline extends BasePipeline {
   constructor() {
-    super('fhir-raw-encounter');
+    super('encounter');
   }
 
   runFollowUp(followUp, patientId) {
@@ -18,9 +18,5 @@ export class EncounterPipeline extends BasePipeline {
     if (!this.patients.has(patientId) || data.type[0].coding[0].code !== "390906007") return;
 
     this.store.setOrIncrementKey(patientId, -1);
-  }
-
-  reduce() {
-    super.reduce('encounters')
   }
 }

@@ -2,7 +2,7 @@ import { BasePipeline } from './basePipeline.js';
 
 export class CareplanPipeline extends BasePipeline {
   constructor() {
-    super('fhir-raw-careplan');
+    super('careplan');
     this.patientLatestHivCareplanId = new Map();
   }
 
@@ -45,10 +45,6 @@ export class CareplanPipeline extends BasePipeline {
     } else {
       this.store.setOrIncrementKey(patientId, -1);
     }
-  }
-
-  reduce() {
-    super.reduce('careplans');
   }
 
   clear() {
