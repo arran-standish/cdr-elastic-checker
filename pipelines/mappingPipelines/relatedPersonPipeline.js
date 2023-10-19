@@ -2,7 +2,7 @@ import { BasePipeline } from './basePipeline.js';
 
 export class RelatedPersonPipeline extends BasePipeline {
   #relatedPersonIds = new Map();
-  #childEvent = (relatedPersonId, patientId) => {
+  #childEventHandler = (relatedPersonId, patientId) => {
     // we already handled this case when looping through all related persons so skip
     if (this.#relatedPersonIds.get(relatedPersonId)) return;
 
@@ -14,7 +14,7 @@ export class RelatedPersonPipeline extends BasePipeline {
   constructor(child) {
     if (!child) throw new Error('RelatedPersonPipeline depends on QuestionnaireResponsePipeline, did you pass in the child?');
     super('relatedperson', child);
-    this.mappingPipelineEmitter.on('related-person', this.#childEvent);
+    this.mappingPipelineEmitter.on('related-person', this.#childEventHandler);
   }
 
   run(data, patientId) {
@@ -36,6 +36,6 @@ export class RelatedPersonPipeline extends BasePipeline {
   clear() {
     super.clear();
     this.#relatedPersonIds.clear();
-    this.mappingPipelineEmitter.removeListener('related-person', this.#childEvent);
+    this.mappingPipelineEmitter.removeListener('related-person', this.#childEventHandler);
   }
 }

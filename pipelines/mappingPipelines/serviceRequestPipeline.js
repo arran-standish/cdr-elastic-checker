@@ -1,12 +1,14 @@
 import { BasePipeline } from './basePipeline.js';
 
 export class ServiceRequestPipeline extends BasePipeline {
+  #careplanEventHandler = (patientId, careplanId) => {
+    this.patientLatestHivCareplanId.set(patientId, careplanId);
+  }
+
   constructor() {
     super('servicerequest');
     this.patientLatestHivCareplanId = new Map();
-    this.mappingPipelineEmitter.on('hiv-careplan', (patientId, careplanId) => {
-      this.patientLatestHivCareplanId.set(patientId, careplanId);
-    })
+    this.mappingPipelineEmitter.on('hiv-careplan', this.#careplanEventHandler);
   }
 
   run(data, patientId) {
@@ -34,5 +36,6 @@ export class ServiceRequestPipeline extends BasePipeline {
   clear() {
     super.clear()
     this.patientLatestHivCareplanId.clear();
+    this.mappingPipelineEmitter.removeListener('hiv-careplan', this.#careplanEventHandler);
   }
 }
