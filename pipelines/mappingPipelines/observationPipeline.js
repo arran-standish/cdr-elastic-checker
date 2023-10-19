@@ -1,6 +1,8 @@
 import { BasePipeline } from './basePipeline.js';
 
 function isMatchingObservation(data) {
+  if (!data.code) return false;
+  
   const code = data.code.coding[0].code;
   if (
     code === '87276001' ||
