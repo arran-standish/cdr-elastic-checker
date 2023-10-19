@@ -2,7 +2,7 @@ import { BasePipeline } from './basePipeline.js';
 
 function isMatchingObservation(data) {
   if (!data.code) return false;
-  
+
   const code = data.code.coding[0].code;
   if (
     code === '87276001' ||
@@ -21,10 +21,14 @@ export class ObservationPipeline extends BasePipeline {
   }
 
   runFollowUp(followUp, patientId) {
-    if (followUp.nutritionalStatus || followUp.arvAdherence) {
+    if (followUp.nutritionalStatus !== '') {
       this.store.setOrIncrementKey(patientId);
     }
     
+    if (followUp.arvAdherence !== '') {
+      this.store.setOrIncrementKey(patientId);
+    }
+
     if (followUp.vitalSigns && followUp.vitalSigns.weight) {
       this.store.setOrIncrementKey(patientId);
     }
