@@ -15,7 +15,7 @@ export class EncounterPipeline extends BasePipeline {
     super.runRaw();
     const patientId = data.subject.reference.replace('Patient/', '');
 
-    if (!this.patients.has(patientId) || data.type[0].coding[0].code === "390906007") return;
+    if (!this.patients.has(patientId) || data.type[0].coding[0].code !== "390906007") return;
 
     this.store.setOrIncrementKey(patientId, -1);
   }
