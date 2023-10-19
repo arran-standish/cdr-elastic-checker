@@ -1,5 +1,6 @@
 import { EventEmitter } from 'node:events';
 const mappingPipelineEmitter = new EventEmitter();
+mappingPipelineEmitter.setMaxListeners(15);
 
 export class BasePipeline {
   #mappingPipelineEmitter;
