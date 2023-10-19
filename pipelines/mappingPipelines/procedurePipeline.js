@@ -2,7 +2,8 @@ import { BasePipeline } from './basePipeline.js';
 
 function isMatchingObservation(data) {
   if (!data.category || !data.code) return false;
-  
+  if (!data.category.coding || !data.code.coding) return false;
+
   const categoryCode = data.category.coding[0].code;
   const code = data.code.coding[0].code;
 
