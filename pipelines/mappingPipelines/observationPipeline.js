@@ -21,7 +21,7 @@ export class ObservationPipeline extends BasePipeline {
   }
 
   runFollowUp(followUp, patientId) {
-    if (followUp.arvAdherence && followUp.nutritionalStatus !== '') {
+    if (followUp.nutritionalStatus && followUp.nutritionalStatus !== '') {
       this.store.setOrIncrementKey(patientId);
     }
     
