@@ -21,6 +21,7 @@ export class CareplanPipeline extends BasePipeline {
     // since observations and procedures can also add the cervicalScreening object with different fields
     if (followUp.cervicalScreening && (
       followUp.cervicalScreening.treatmentReceivedDate ||
+      followUp.cervicalScreening.treatmentReceivedDate === null ||
       followUp.cervicalScreening.precancerousLesionTreatmentReceived ||
       followUp.cervicalScreening.suspiciousCancerousLesionTreatmentReceived ||
       followUp.cervicalScreening.nextAppointmentDateForCCA)
