@@ -7,10 +7,19 @@ function isMatchingObservation(data) {
   if (
     code === '87276001' ||
     code === '418633004' ||
-    code === '29463-7' ||
-    code === '315124004' ||
-    code === '54038-5'
+    code === '29463-7'
   ) return true;
+
+  // only count a labResult observation if it has data to add to the object
+  // since we can't count on the root object itself because other pipelines add data to it
+  if (code === '315124004' && data.valueQuantity && data.valueQuantity.value)
+    return true;
+
+  // only count cervicalCancerScreening if we have fields to populate the object with
+  if (code === '54038-5') {
+    if (data.method && data.method.coding) return true;
+    if (data.valueCodeableConcept && data.valueCodeableConcept.coding) return true;
+  }
 
   return false;
 }
