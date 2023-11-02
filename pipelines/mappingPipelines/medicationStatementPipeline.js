@@ -1,6 +1,9 @@
 import { BasePipeline } from './basePipeline.js';
 
 function isMatchingMedicationStatement(data) {
+  // only count well formed data
+  if (!data.effectivePeriod || !data.effectivePeriod.start || !data.effectivePeriod.end) return false;
+
   if (data.reasonCode && data.reasonCode[0].coding[0].code === 'arv-treatment') return true;
   if (
     data.category && (
