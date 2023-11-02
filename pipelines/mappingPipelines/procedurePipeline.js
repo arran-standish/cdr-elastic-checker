@@ -43,14 +43,17 @@ export class ProcedurePipeline extends BasePipeline {
       this.store.setOrIncrementKey(patientId);
     }
 
-    if (followUp.cervicalScreening && (
-      followUp.cervicalScreening.counsellingGiven ||
-      followUp.cervicalScreening.acceptedScreening ||
-      followUp.cervicalScreening.screeningDone ||
-      followUp.cervicalScreening.dateScreeningDone ||
-      followUp.cervicalScreening.typeOfScreening)
-    ) {
-      this.store.setOrIncrementKey(patientId);
+    if (followUp.cervicalScreening) {
+      const cervicalScreening = followUp.cervicalScreening;
+      // cervicalScreeningCounselling procedure fields
+      if (cervicalScreening.counsellingGiven || cervicalScreening.acceptedScreening) {
+        this.store.setOrIncrementKey(patientId);
+      }
+
+      // cervicalScreeningProcedure procedure fields
+      if (cervicalScreening.screeningDone || cervicalScreening.dateScreeningDone || cervicalScreening.typeOfScreening) {
+        this.store.setOrIncrementKey(patientId);
+      }
     }
   }
 
