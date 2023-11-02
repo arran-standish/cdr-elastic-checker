@@ -30,7 +30,7 @@ export class QuestionnaireResponsePipeline extends BasePipeline {
 
   runFollowUp(followUp, patientId) {
     // ARTEligibility
-    if (followUp.hivConfirmedDate || followUp.whyEligible) {
+    if (followUp.hivConfirmedDate || followUp.whyEligible || followUp.whyEligible === "") {
       this.store.setOrIncrementKey(patientId);
     }
     
