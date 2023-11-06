@@ -23,7 +23,7 @@ function isMatchingObservation(data) {
     if (code === 'eac') {
       if (Object.isKeyPopulated(data, 'performedDateTime')) return true;
       if (Object.isKeyPopulated(data, 'status')) return true;
-      if (Object.isKeyPopulated(data, 'extension.valueString')) return true;
+      if (Object.isKeyPopulated(data, 'extension[0].valueString')) return true;
     }
 
     if (code === 'cc-screening-counseled') {
@@ -36,7 +36,7 @@ function isMatchingObservation(data) {
   if (categoryCode === '20135006' && code === '243877001') {
     if (Object.isKeyPopulated(data, 'status')) return true;
     if (Object.isKeyPopulated(data, 'performedDateTime')) return true;
-    if (Object.isKeyPopulated(data, 'extension.valueString')) return true;
+    if (Object.isKeyPopulated(data, 'extension[0].valueString')) return true;
   }
 
   return false;

@@ -8,7 +8,8 @@ export class MedicationDispensePipeline extends BasePipeline {
   runFollowUp(followUp, patientId) {
     if (
       Object.isKeyPopulated(followUp, 'followUpStatus') ||
-      Object.isKeyPopulated(followUp, 'arvDrugs')) {
+      Object.isKeyPopulated(followUp, 'arvDrugs')
+    ) {
       this.store.setOrIncrementKey(patientId);
     }
   }
@@ -20,9 +21,9 @@ export class MedicationDispensePipeline extends BasePipeline {
     if (!this.patients.has(patientId)) return;
 
     const hasValidExtension = 
-      Object.isKeyPopulated(data, 'extension.valueDateTime') ||
-      Object.isKeyPopulated(data, 'extension.valueBoolean') ||
-      Object.isKeyPopulated(data, 'extension.valueString');
+      Object.isKeyPopulated(data, 'extension[0].valueDateTime') ||
+      Object.isKeyPopulated(data, 'extension[0].valueBoolean') ||
+      Object.isKeyPopulated(data, 'extension[0].valueString');
 
     if (
       hasValidExtension ||

@@ -42,8 +42,37 @@ export class CareplanPipeline extends BasePipeline {
       if (this.patientLatestHivCareplanId.get(patientId) === data.id) {
         this.store.setOrIncrementKey(patientId, -1);
       }
-    } else {
-      this.store.setOrIncrementKey(patientId, -1);
+    } else if (careplanType === 'cervical-cancer-care-plan') {
+      let validCervicalPlan = false;
+      if (Object.isKeyPopulated(data, 'extension[0].valueDateTime')) {
+        validCervicalPlan = true;
+      }
+
+      if (Object.isKeyPopulated(data, 'activity') && Array.isArray(data.activity)) {
+        for (const active of data.activity) {
+          // it is a valid cervical cancer care plan
+          if (Object.isKeyPopulated(active, 'detail.reasonCode[0].coding[0].code')) {
+            if (active.detail.reasonCode[0].coding[0].code === '285636001') {
+              if (
+                Object.isKeyPopulated(active, 'detail.scheduledPeriod.start') ||
+                Object.isKeyPopulated(active, 'detail.code.coding[0].code')
+              ) {
+                validCervicalPlan = true;
+              }
+            }
+            else if (
+              active.detail.reasonCode[0].coding[0].code === '315266007' &&
+              Object.isKeyPopulated(active, 'detail.code.coding[0].code')
+            ) {
+              validCervicalPlan = true;
+            }
+          }
+        }
+      }
+
+      if (validCervicalPlan) {
+        this.store.setOrIncrementKey(patientId, -1);
+      }
     }
   }
 
