@@ -4,8 +4,8 @@ function isMatchingObservation(data) {
   if (!data.code || !data.code.coding) return false;
 
   const code = data.code.coding[0].code;
-  const hasValueCodeableConcept = data.valueCodeableConcept && data.valueCodeableConcept.coding[0].code;
-  const hasValueQuantity = data.valueQuantity && data.valueQuantity.value && data.valueQuantity.value !== '';
+  const hasValueCodeableConcept = Object.isKeyPopulated(data, 'valueCodeableConcept.coding[0].code');
+  const hasValueQuantity = Object.isKeyPopulated(data, 'valueQuantity.value');
   // nutritionalStatus
   if (hasValueCodeableConcept && code === '87276001') return true;
 
@@ -21,7 +21,7 @@ function isMatchingObservation(data) {
   // only count cervicalCancerScreening if we have fields to populate the object with
   if (code === '54038-5') {
     if (hasValueCodeableConcept) return true;
-    if (data.method && data.method.coding) return true;
+    if (Object.isKeyPopulated(data, 'data.method.coding')) return true;
   }
 
   return false;
@@ -33,26 +33,26 @@ export class ObservationPipeline extends BasePipeline {
   }
 
   runFollowUp(followUp, patientId) {
-    if (followUp.nutritionalStatus && followUp.nutritionalStatus !== '') {
+    if (Object.isKeyPopulated(followUp, 'nutritionalStatus')) {
       this.store.setOrIncrementKey(patientId);
     }
     
-    if (followUp.arvAdherence && followUp.arvAdherence !== '') {
+    if (Object.isKeyPopulated(followUp, 'followUp.arvAdherence')) {
       this.store.setOrIncrementKey(patientId);
     }
 
-    if (followUp.vitalSigns && followUp.vitalSigns.weight) {
+    if (Object.isKeyPopulated(followUp, 'followUp.vitalSigns.weight')) {
       this.store.setOrIncrementKey(patientId);
     }
 
-    if (followUp.labResults && followUp.labResults.viralLoad) {
+    if (Object.isKeyPopulated(followUp, 'followUp.labResults.viralLoad')) {
       this.store.setOrIncrementKey(patientId);
     }
     
-    if (followUp.cervicalScreening && (
-      followUp.cervicalScreening.screeningMethod ||
-      followUp.cervicalScreening.hpvDNATestResult ||
-      followUp.cervicalScreening.viaScreeningResult)
+    if (
+      Object.isKeyPopulated(followUp, 'cervicalScreening.screeningMethod') ||
+      Object.isKeyPopulated(followUp, 'cervicalScreening.hpvDNATestResult') ||
+      Object.isKeyPopulated(followUp, 'cervicalScreening.viaScreeningResult')
     ) {
       this.store.setOrIncrementKey(patientId);
     }
