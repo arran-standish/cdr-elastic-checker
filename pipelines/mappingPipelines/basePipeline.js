@@ -50,9 +50,18 @@ export class BasePipeline {
     let positive = 0;
     let negative = 0;
     let missingCount = 0;
+    let tooManyCount = 0;
     for (const patient of this.store.keys()) {
       let difference = this.store.get(patient);
-      if (difference > 0) positive += difference;
+      if (difference > 0) {
+        if (tooManyCount < 20) {
+          console.log(`patient ${patient} has too many ${this.#resourceType}`);
+          tooManyCount++;
+        }
+        
+        positive += difference;
+      }
+
       if (difference < 0) {
         if (missingCount < 20) {
           console.log(`patient ${patient} has missing ${this.#resourceType}`);
