@@ -1,16 +1,21 @@
 import { BasePipeline } from './basePipeline.js';
 
 function isMatchingMedicationStatement(data) {
-  // only count well formed data
-  if (!data.effectivePeriod || !data.effectivePeriod.start || !data.effectivePeriod.end) return false;
+  if (data.reasonCode && data.reasonCode[0].coding[0].code === 'arv-treatment') {
+    if (data.effectivePeriod) return true;
+    if (data.status) return true;
+  } 
 
-  if (data.reasonCode && data.reasonCode[0].coding[0].code === 'arv-treatment') return true;
-  if (
-    data.category && (
-      data.category.coding[0].code === '699618001' || 
-      data.category.coding[0].code === 'tb-treatment'
-    )
-  ) return true;
+  if (data.category && data.category.coding[0].code === '699618001') {
+    if (data.effectivePeriod) return true;
+    if (data.reasonCode && data.reasonCode[0]) return true;
+  }
+
+  // the rest of the data type only look at effective period so return false if we don't have date fields
+  // as that means we have no data to map to fhir-enrich
+  if (!data.effectivePeriod || !data.effectivePeriod.start || !data.effectivePeriod.end) return false;
+  
+  if (data.category && data.category.coding[0].code === 'tb-treatment') return true;
   if (
     data.medicationCodeableConcept && (
       data.medicationCodeableConcept.coding[0].code === '398731002' ||

@@ -8,8 +8,15 @@ function isMatchingObservation(data) {
   const code = data.code.coding[0].code;
 
   // laboratoryProcedure type
-  if (categoryCode === '108252007' && code === '315124004')
-    return true;
+  if (categoryCode === '108252007' && code === '315124004') {
+    if (data.reasonCode && data.reasonCode[0].text && data.reasonCode[0].text !== '')
+      return true;
+    if (data.extension && data.extension[0].valueString && data.extension[0].valueString !== '')
+      return true;
+
+    // don't have either data fields to populate the object so ignore it
+    return false;
+  }
 
   // counsellingProcedure type
   if (
@@ -32,11 +39,13 @@ export class ProcedurePipeline extends BasePipeline {
   }
 
   runFollowUp(followUp, patientId) {
-    if (followUp.labResults && (
-      followUp.labResults.viralLoadIndication ||
-      followUp.labResults.viralLoadIndicationReason)
-    ) {
-      this.store.setOrIncrementKey(patientId);
+    if (followUp.labResults) {
+      const labResults = followUp.labResults;
+      if (
+        (labResults.viralLoadIndication && labResults.viralLoadIndication !== '') ||
+        (labResults.viralLoadIndicationReason && labResults.viralLoadIndicationReason !== '')
+      )
+        this.store.setOrIncrementKey(patientId);
     }
 
     if (followUp.eac && !Object.isEmpty(followUp.eac)) {
