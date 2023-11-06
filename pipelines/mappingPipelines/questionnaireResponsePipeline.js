@@ -20,7 +20,7 @@ export class QuestionnaireResponsePipeline extends BasePipeline {
   }
 
   run(data, patientId) {
-    if (data.indexCaseContactScreening && !Object.isEmpty(data.indexCaseContactScreening)) {
+    if (Object.isKeyPopulated(data, 'indexCaseContactScreening')) {
       this.store.setOrIncrementKey(patientId);
       // since the fhir-id is not stored can only check if we get at least 1 instance
       this.#contactScreenProcessed.set(patientId, true);
@@ -30,17 +30,23 @@ export class QuestionnaireResponsePipeline extends BasePipeline {
 
   runFollowUp(followUp, patientId) {
     // ARTEligibility
-    if (followUp.hivConfirmedDate || followUp.whyEligible || followUp.whyEligible === "") {
+    if (
+      Object.isKeyPopulated(followUp, 'hivConfirmedDate') || 
+      Object.isKeyPopulated(followUp, 'whyEligible')
+    ) {
       this.store.setOrIncrementKey(patientId);
     }
     
     // PregnancyStatus
-    if (followUp.pregnant || followUp.breastfeeding) {
+    if (
+      Object.isKeyPopulated(followUp, 'pregnant') || 
+      Object.isKeyPopulated(followUp, 'breastfeeding')
+    ) {
       this.store.setOrIncrementKey(patientId);
     }
     
     // AppointmentSpacingModel
-    if (followUp.asm && !Object.isEmpty(followUp.asm)) {
+    if (Object.isKeyPopulated(followUp, 'asm')) {
       this.store.setOrIncrementKey(patientId);
     }
   }

@@ -6,7 +6,9 @@ export class MedicationDispensePipeline extends BasePipeline {
   }
 
   runFollowUp(followUp, patientId) {
-    if (followUp.followUpStatus || (followUp.arvDrugs && !Object.isEmpty(followUp.arvDrugs))) {
+    if (
+      Object.isKeyPopulated(followUp, 'followUpStatus') ||
+      Object.isKeyPopulated(followUp, 'arvDrugs')) {
       this.store.setOrIncrementKey(patientId);
     }
   }
@@ -16,19 +18,19 @@ export class MedicationDispensePipeline extends BasePipeline {
     const patientId = data.subject.reference.replace('Patient/', '');
 
     if (!this.patients.has(patientId)) return;
-    
-    const hasValidExtension = data.extension && (
-      (data.extension.valueDateTime && data.extension.valueDateTime !== '') ||
-      (data.extension.valueBoolean && data.extension.valueDateTime !== '') ||
-      (data.extension.valueString && data.extension.valueString !== '') 
-    );
+
+    const hasValidExtension = 
+      Object.isKeyPopulated(data, 'extension.valueDateTime') ||
+      Object.isKeyPopulated(data, 'extension.valueBoolean') ||
+      Object.isKeyPopulated(data, 'extension.valueString');
+
     if (
-        hasValidExtension ||
-        data.medicationCodeableConcept ||
-        (data.statusReasonCodeableConcept && data.statusReasonCodeableConcept.coding[0].code) ||
-        (data.quantity && data.quantity.value && data.quantity.value !== '') ||
-        (data.daysSupply && data.daysSupply.value && data.daysSupply.value !== '')
-      )
-        this.store.setOrIncrementKey(patientId, -1);
+      hasValidExtension ||
+      Object.isKeyPopulated(data, 'medicationCodeableConcept') ||
+      Object.isKeyPopulated(data, 'statusReasonCodeableConcept.coding[0].code') ||
+      Object.isKeyPopulated(data, 'quantity.value') ||
+      Object.isKeyPopulated(data, 'daysSupply.value')
+    )
+      this.store.setOrIncrementKey(patientId, -1);
   }
 }

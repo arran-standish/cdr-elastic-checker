@@ -6,7 +6,11 @@ export class EncounterPipeline extends BasePipeline {
   }
 
   runFollowUp(followUp, patientId) {
-    if (followUp.followUpDate || followUp.nextVisitDate || followUp.visitType) {
+    if (
+      Object.isKeyPopulated(followUp, 'followUpDate') || 
+      Object.isKeyPopulated(followUp, 'nextVisitDate') || 
+      Object.isKeyPopulated(followUp, 'visitType')
+    ) {
       this.store.setOrIncrementKey(patientId);
     }
   }

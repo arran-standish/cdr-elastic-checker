@@ -12,7 +12,7 @@ export class ServiceRequestPipeline extends BasePipeline {
   }
 
   run(data, patientId) {
-    if (data.hivPositiveTracking && data.hivPositiveTracking.entryPoint) {
+    if (Object.isKeyPopulated(data, 'hivPositiveTracking.entryPoint')) {
       this.store.setOrIncrementKey(patientId);
     }
   }

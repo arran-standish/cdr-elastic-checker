@@ -1,20 +1,20 @@
 import { BasePipeline } from './basePipeline.js';
 
 function isMatchingMedicationStatement(data) {
-  const hasEffectivePeriod = data.effectivePeriod && (
-    (data.effectivePeriod.start && data.effectivePeriod.start !== '') || 
-    (data.effectivePeriod.end && data.effectivePeriod.end !== '')
-  );
+  const hasEffectivePeriod =
+    Object.isKeyPopulated(data, 'effectivePeriod.start') ||
+    Object.isKeyPopulated(data, 'effectivePeriod.end');
 
   if (data.reasonCode && data.reasonCode[0].coding[0].code === 'arv-treatment') {
-    if (hasEffectivePeriod || data.status) return true;
-  } 
+    if (hasEffectivePeriod || Object.isKeyPopulated(data, 'status')) return true;
+  }
 
   if (data.category && data.category.coding[0].code === '699618001') {
-    if (hasEffectivePeriod || data.reasonCode && data.reasonCode[0]) return true;
+    if (hasEffectivePeriod || Object.isKeyPopulated(data, 'reasonCode[0]')) return true;
   }
 
   if (hasEffectivePeriod && data.category && data.category.coding[0].code === 'tb-treatment') return true;
+
   if (
     hasEffectivePeriod &&
     data.medicationCodeableConcept && (
@@ -32,23 +32,23 @@ export class MedicationStatementPipeline extends BasePipeline {
   }
 
   runFollowUp(followUp, patientId) {
-    if (followUp.arvTreatmentStarted && !Object.isEmpty(followUp.arvTreatmentStarted)) {
-      this.store.setOrIncrementKey(patientId);
-    }
-    
-    if (followUp.tbScreening && !Object.isEmpty(followUp.tbScreening)) {
-      this.store.setOrIncrementKey(patientId);
-    }
-    
-    if (followUp.tbTreatment && !Object.isEmpty(followUp.tbTreatment)) {
-      this.store.setOrIncrementKey(patientId);
-    }
-    
-    if (followUp.tbCotrimoxazolDrugs && !Object.isEmpty(followUp.tbCotrimoxazolDrugs)) {
+    if (Object.isKeyPopulated(followUp, 'arvTreatmentStarted')) {
       this.store.setOrIncrementKey(patientId);
     }
 
-    if (followUp.tbFluconazoleDrugs && !Object.isEmpty(followUp.tbFluconazoleDrugs)) {
+    if (Object.isKeyPopulated(followUp, 'tbScreening')) {
+      this.store.setOrIncrementKey(patientId);
+    }
+
+    if (Object.isKeyPopulated(followUp, 'tbTreatment')) {
+      this.store.setOrIncrementKey(patientId);
+    }
+
+    if (Object.isKeyPopulated(followUp, 'tbCotrimoxazolDrugs')) {
+      this.store.setOrIncrementKey(patientId);
+    }
+
+    if (Object.isKeyPopulated(followUp, 'tbFluconazoleDrugs')) {
       this.store.setOrIncrementKey(patientId);
     }
   }

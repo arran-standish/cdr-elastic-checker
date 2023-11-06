@@ -1,7 +1,7 @@
 import { BasePipeline } from './basePipeline.js';
 
 function isMatchingObservation(data) {
-  if (!data.code || !data.code.coding) return false;
+  if (!Object.isKeyPopulated(data, 'code.coding')) return false;
 
   const code = data.code.coding[0].code;
   const hasValueCodeableConcept = Object.isKeyPopulated(data, 'valueCodeableConcept.coding[0].code');
@@ -21,7 +21,7 @@ function isMatchingObservation(data) {
   // only count cervicalCancerScreening if we have fields to populate the object with
   if (code === '54038-5') {
     if (hasValueCodeableConcept) return true;
-    if (Object.isKeyPopulated(data, 'data.method.coding')) return true;
+    if (Object.isKeyPopulated(data, 'method.coding')) return true;
   }
 
   return false;
@@ -37,15 +37,15 @@ export class ObservationPipeline extends BasePipeline {
       this.store.setOrIncrementKey(patientId);
     }
     
-    if (Object.isKeyPopulated(followUp, 'followUp.arvAdherence')) {
+    if (Object.isKeyPopulated(followUp, 'arvAdherence')) {
       this.store.setOrIncrementKey(patientId);
     }
 
-    if (Object.isKeyPopulated(followUp, 'followUp.vitalSigns.weight')) {
+    if (Object.isKeyPopulated(followUp, 'vitalSigns.weight')) {
       this.store.setOrIncrementKey(patientId);
     }
 
-    if (Object.isKeyPopulated(followUp, 'followUp.labResults.viralLoad')) {
+    if (Object.isKeyPopulated(followUp, 'labResults.viralLoad')) {
       this.store.setOrIncrementKey(patientId);
     }
     

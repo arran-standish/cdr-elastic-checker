@@ -6,11 +6,11 @@ export class DiagnosticReportPipeline extends BasePipeline {
   }
 
   runFollowUp(followUp, patientId) {
-    if (followUp.labResults && (
-        followUp.labResults.viralLoadRequestedDate || 
-        followUp.labResults.viralLoadResultDate ||
-        followUp.labResults.viralLoadStatus)
-      ) {
+    if (
+      Object.isKeyPopulated(followUp, 'labResults.viralLoadRequestedDate') ||
+      Object.isKeyPopulated(followUp, 'labResults.viralLoadResultDate') ||
+      Object.isKeyPopulated(followUp, 'labResults.viralLoadStatus')
+    ) {
       this.store.setOrIncrementKey(patientId);
     }
   }
@@ -20,7 +20,7 @@ export class DiagnosticReportPipeline extends BasePipeline {
     const patientId = data.subject.reference.replace('Patient/', '');
 
     if (!this.patients.has(patientId) || data.code.coding[0].code !== '315124004') return;
-    if (!Object.isEmpty(data.effectivePeriod))
+    if (Object.isKeyPopulated(data, 'effectivePeriod'))
       this.store.setOrIncrementKey(patientId, -1);
   }
 }
