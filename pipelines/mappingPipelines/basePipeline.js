@@ -49,9 +49,18 @@ export class BasePipeline {
   reduce() {
     let positive = 0;
     let negative = 0;
-    for (const difference of this.store.values()) {
+    let missingCount = 0;
+    for (const patient of this.store.keys()) {
+      let difference = this.store.get(patient);
       if (difference > 0) positive += difference;
-      if (difference < 0) negative += difference;
+      if (difference < 0) {
+        if (missingCount < 20) {
+          console.log(`patient ${patient} has missing ${this.#resourceType}`);
+          missingCount++;
+        }
+
+        negative += difference;
+      }
     } 
 
     console.log(`a total of ${positive} ${this.#resourceType} are not deleted in fhir-enrich`);
