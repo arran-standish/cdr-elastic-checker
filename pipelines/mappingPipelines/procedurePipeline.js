@@ -19,16 +19,25 @@ function isMatchingObservation(data) {
   }
 
   // counsellingProcedure type
-  if (
-    categoryCode === '409063005' && (
-      code === 'eac' ||
-      code === 'cc-screening-counseled'
-    )
-  ) return true;
+  if (categoryCode === '409063005') {
+    if (code === 'eac') {
+      if (data.performedDateTime && data.performedDateTime !== '') return true;
+      if (data.status && data.status !== '') return true;
+      if (data.extension && data.extension.valueString && data.extension.valueString !== '') return true;
+    }
+
+    if (code === 'cc-screening-counseled') {
+      if (data.status && data.status !== '') return true;
+      if (data.outcome && data.outcome.coding && data.outcome.coding[0].code !== '') return true;
+    }
+  }
 
   // screeningProcedure type
-  if (categoryCode === '20135006' && code === '243877001')
-    return true;
+  if (categoryCode === '20135006' && code === '243877001') {
+    if (data.status && data.status !== '') return true;
+    if (data.performedDateTime && data.performedDateTime !== '') return true;
+    if (data.extension && data.extension.valueString && data.extension.valueString !== '') return true;
+  }
 
   return false;
 }

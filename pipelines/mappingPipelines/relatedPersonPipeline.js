@@ -28,9 +28,11 @@ export class RelatedPersonPipeline extends BasePipeline {
     
     if (!this.patients.has(patientId)) return;
     
-    // remember which related persons have already been accounted for
-    this.#relatedPersonIds.set(data.id, patientId);
-    this.store.setOrIncrementKey(patientId, -1);
+    if (data.relationship && data.relationship[1] && data.relationship[1].coding && data.relationship[1].coding[0].code === 'FAMMEMB') {
+      // remember which related persons have already been accounted for
+      this.#relatedPersonIds.set(data.id, patientId);
+      this.store.setOrIncrementKey(patientId, -1);
+    }
   }
 
   clear() {

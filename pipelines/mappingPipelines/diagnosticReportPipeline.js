@@ -20,7 +20,7 @@ export class DiagnosticReportPipeline extends BasePipeline {
     const patientId = data.subject.reference.replace('Patient/', '');
 
     if (!this.patients.has(patientId) || data.code.coding[0].code !== '315124004') return;
-
-    this.store.setOrIncrementKey(patientId, -1);
+    if (!Object.isEmpty(data.effectivePeriod))
+      this.store.setOrIncrementKey(patientId, -1);
   }
 }

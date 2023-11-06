@@ -16,7 +16,19 @@ export class MedicationDispensePipeline extends BasePipeline {
     const patientId = data.subject.reference.replace('Patient/', '');
 
     if (!this.patients.has(patientId)) return;
-
-    this.store.setOrIncrementKey(patientId, -1);
+    
+    const hasValidExtension = data.extension && (
+      (data.extension.valueDateTime && data.extension.valueDateTime !== '') ||
+      (data.extension.valueBoolean && data.extension.valueDateTime !== '') ||
+      (data.extension.valueString && data.extension.valueString !== '') 
+    );
+    if (
+        hasValidExtension ||
+        data.medicationCodeableConcept ||
+        (data.statusReasonCodeableConcept && data.statusReasonCodeableConcept.coding[0].code) ||
+        (data.quantity && data.quantity.value && data.quantity.value !== '') ||
+        (data.daysSupply && data.daysSupply.value && data.daysSupply.value !== '')
+      )
+        this.store.setOrIncrementKey(patientId, -1);
   }
 }

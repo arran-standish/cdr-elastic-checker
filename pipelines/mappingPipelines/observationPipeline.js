@@ -4,21 +4,24 @@ function isMatchingObservation(data) {
   if (!data.code || !data.code.coding) return false;
 
   const code = data.code.coding[0].code;
-  if (
-    code === '87276001' ||
-    code === '418633004' ||
-    code === '29463-7'
-  ) return true;
+  const hasValueCodeableConcept = data.valueCodeableConcept && data.valueCodeableConcept.coding[0].code;
+  const hasValueQuantity = data.valueQuantity && data.valueQuantity.value && data.valueQuantity.value !== '';
+  // nutritionalStatus
+  if (hasValueCodeableConcept && code === '87276001') return true;
 
-  // only count a labResult observation if it has data to add to the object
-  // since we can't count on the root object itself because other pipelines add data to it
-  if (code === '315124004' && data.valueQuantity && data.valueQuantity.value)
-    return true;
+  // medicationAdherence
+  if (hasValueCodeableConcept && code === '418633004') return true;
+
+  // weight
+  if (hasValueQuantity && code === '29463-7') return true;
+
+  // viralLoad
+  if (hasValueQuantity && code === '315124004') return true;
 
   // only count cervicalCancerScreening if we have fields to populate the object with
   if (code === '54038-5') {
+    if (hasValueCodeableConcept) return true;
     if (data.method && data.method.coding) return true;
-    if (data.valueCodeableConcept && data.valueCodeableConcept.coding) return true;
   }
 
   return false;
