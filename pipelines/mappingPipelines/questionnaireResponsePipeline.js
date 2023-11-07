@@ -68,8 +68,73 @@ export class QuestionnaireResponsePipeline extends BasePipeline {
         this.#contactScreenProcessed.set(patientId, false);
       }
     } else {
-      this.store.setOrIncrementKey(patientId, -1);
+      if (!Object.isKeyPopulated(data, 'item')) return;
+      
+      if (data.questionnaire === 'ARTEligibility') {
+        let validART = false;
+        for (const item of data.item) {
+          if (item.linkId === 'hiv-confirmation-date') {
+            if (Object.isKeyPopulated(item, 'answer[0].valueDate')) {
+              validART = true;
+              break;
+            }
+          }
+          if (item.linkId === 'eligbility') {
+            // item[0] => eligbility.eligbile
+            // item[0].answer[0].item[0] => eligbility.eligbile.why
+            if (Object.isKeyPopulated(item, 'item[0].answer[0].item[0].answer[0].valueString')) {
+              validART = true;
+              break;
+            }
+          }
+        }
+        if (validART) this.store.setOrIncrementKey(patientId, -1);
+      } else if (data.questionnaire === 'PregnancyStatus') {
+        for (const item of data.item) {
+          if (item.linkId === 'pregnant' || item.linkId === 'is-breast-feeding') {
+            if (Object.isKeyPopulated(item, 'answer[0].valueBoolean')) {
+              this.store.setOrIncrementKey(patientId, -1);
+              break;
+            }
+          }
+        }
+      } else if (data.questionnaire === 'AppointmentSpacingModel') {
+        let validASM = false;
+        for (const item of data.item) {
+          if (item.linkId === 'assessment' || item.linkId === 'new-category-change') {
+            for (const innerItem of item.item) {
+              if (
+                Object.isKeyPopulated(innerItem, 'answer[0].valueDate') ||
+                Object.isKeyPopulated(innerItem, 'answer[0].valueBoolean')
+              ) {
+                validASM = true;
+                break;
+              }
+            }
+          }
+          if (item.linkId === 'enrollment' || item.linkId === 'couple-enrollment' || item.linkId === 'termination') {
+            for (const innerItem of item.item) {
+              if (
+                Object.isKeyPopulated(innerItem, 'answer[0].valueDate') ||
+                Object.isKeyPopulated(innerItem, 'answer[0].valueBoolean') ||
+                Object.isKeyPopulated(innerItem, 'answer[0].valueBoolean')
+              ) {
+                validASM = true;
+                break;
+              }
+            }
+          }
+          if (item.linkId === 'category') {
+            if (Object.isKeyPopulated(item, 'answer[0].valueString')) validASM = true;
+          }
+          if (item.linkId === 'eligible' || item.linkId === 'counseled') {
+            if (Object.isKeyPopulated(item, 'answer[0].valueBoolean')) validASM = true;
+          }
+        }
+        if (validASM) this.store.setOrIncrementKey(patientId, -1);
+      }
     }
+
   }
 
   clear() {
