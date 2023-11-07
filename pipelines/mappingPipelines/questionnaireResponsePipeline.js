@@ -1,18 +1,5 @@
 import { BasePipeline } from './basePipeline.js';
 
-function isMatchingQuestionnaire(data) {
-  const questionnaireType = data.questionnaire;
-  if (
-    questionnaireType === "ARTEligibility" ||
-    questionnaireType === "PregnancyStatus" ||
-    questionnaireType === "AppointmentSpacingModel" ||
-    questionnaireType === "IndexCaseContactScreening" ||
-    questionnaireType === "IndexCaseFamilyContact"
-  ) return true;
-
-  return false;
-}
-
 export class QuestionnaireResponsePipeline extends BasePipeline {
   #contactScreenProcessed = new Map();
   constructor() {
@@ -55,7 +42,7 @@ export class QuestionnaireResponsePipeline extends BasePipeline {
     super.runRaw();
     const patientId = data.subject.reference.replace('Patient/', '');
 
-    if (!this.patients.has(patientId) || !isMatchingQuestionnaire(data)) return;
+    if (!this.patients.has(patientId)) return;
 
     if (data.questionnaire === 'IndexCaseFamilyContact') {
       const relatedPersonId = data.source.reference.replace('RelatedPerson/', '');
