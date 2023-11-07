@@ -59,7 +59,7 @@ export class BasePipeline {
           tooManyCount++;
         }
         
-        positive += difference;
+        positive++;
       }
 
       if (difference < 0) {
@@ -68,12 +68,12 @@ export class BasePipeline {
           missingCount++;
         }
 
-        negative += difference;
+        negative--;
       }
     } 
 
-    console.log(`a total of ${positive} ${this.#resourceType} are not deleted in fhir-enrich`);
-    console.log(`a total of ${negative} ${this.#resourceType} are missing in fhir-enrich`);
+    console.log(`a total of ${positive} patients have ${this.#resourceType} that are not deleted in fhir-enrich`);
+    console.log(`a total of ${negative} patients have ${this.#resourceType} missing in fhir-enrich`);
   }
 
   clear() {
