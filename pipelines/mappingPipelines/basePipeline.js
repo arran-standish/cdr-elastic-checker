@@ -1,4 +1,6 @@
 import { EventEmitter } from 'node:events';
+import * as fs from "node:fs";
+
 const mappingPipelineEmitter = new EventEmitter();
 mappingPipelineEmitter.setMaxListeners(15);
 
@@ -51,6 +53,9 @@ export class BasePipeline {
     let negative = 0;
     let missingCount = 0;
     let tooManyCount = 0;
+    let patientWithMissingResources = "Patient,ResourceType\n";
+    let patientWithExcessOfResources = "Patient,ResourceType\n";
+
     for (const patient of this.store.keys()) {
       let difference = this.store.get(patient);
       if (difference > 0) {
@@ -58,7 +63,7 @@ export class BasePipeline {
           console.log(`patient ${patient} has too many ${this.#resourceType}`);
           tooManyCount++;
         }
-        
+        patientWithExcessOfResources += `${patient},${this.#resourceType}\n`;    
         positive++;
       }
 
@@ -67,13 +72,16 @@ export class BasePipeline {
           console.log(`patient ${patient} has missing ${this.#resourceType}`);
           missingCount++;
         }
-
+        patientWithMissingResources += `${patient},${this.#resourceType}\n`;
         negative--;
       }
     } 
 
     console.log(`a total of ${positive} patients have ${this.#resourceType} that are not deleted in fhir-enrich`);
     console.log(`a total of ${negative} patients have ${this.#resourceType} missing in fhir-enrich`);
+
+    fs.writeFileSync(`${process.cwd()}/${this.#resourceType}-missing.csv`, patientWithMissingResources);
+    fs.writeFileSync(`${process.cwd()}/${this.#resourceType}-excess.csv`, patientWithExcessOfResources);
   }
 
   clear() {
