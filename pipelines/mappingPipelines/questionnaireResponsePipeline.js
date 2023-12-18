@@ -34,7 +34,12 @@ export class QuestionnaireResponsePipeline extends BasePipeline {
     
     // AppointmentSpacingModel
     if (Object.isKeyPopulated(followUp, 'asm')) {
-      this.store.setOrIncrementKey(patientId);
+      // we can have an asm object but every value in that object is null
+      // this happens when the raw questionnaire responses have no identifiable values
+      // so ignore it since we would ignore it during the raw loop
+      if (Object.values(followUp.asm).some((value) => value !== null && typeof value !== 'undefined' && value !== '')) {
+        this.store.setOrIncrementKey(patientId);
+      }
     }
   }
 
@@ -88,7 +93,7 @@ export class QuestionnaireResponsePipeline extends BasePipeline {
       } else if (data.questionnaire === 'AppointmentSpacingModel') {
         let validASM = false;
         for (const item of data.item) {
-          if (item.linkId === 'assessment' || item.linkId === 'new-category-change') {
+          if (item.linkId === 'assessment') {
             for (const innerItem of item.item) {
               if (
                 Object.isKeyPopulated(innerItem, 'answer[0].valueDate') ||
@@ -99,12 +104,34 @@ export class QuestionnaireResponsePipeline extends BasePipeline {
               }
             }
           }
-          if (item.linkId === 'enrollment' || item.linkId === 'couple-enrollment' || item.linkId === 'termination') {
+          if (item.linkId === 'new-category-change') {
+            for (const innerItem of item.item) {
+              if (
+                Object.isKeyPopulated(innerItem, 'answer[0].valueDate') ||
+                Object.isKeyPopulated(innerItem, 'answer[0].valueString')
+              ) {
+                validASM = true;
+                break;
+              }
+            }
+          }
+          if (item.linkId === 'enrollment' || item.linkId === 'termination') {
             for (const innerItem of item.item) {
               if (
                 Object.isKeyPopulated(innerItem, 'answer[0].valueDate') ||
                 Object.isKeyPopulated(innerItem, 'answer[0].valueBoolean') ||
-                Object.isKeyPopulated(innerItem, 'answer[0].valueBoolean')
+                Object.isKeyPopulated(innerItem, 'answer[0].valueString')
+              ) {
+                validASM = true;
+                break;
+              }
+            }
+          }
+          if (item.linkId === 'couple-enrollment') {
+            for (const innerItem of item.item) {
+              if (
+                Object.isKeyPopulated(innerItem, 'answer[0].valueBoolean') ||
+                Object.isKeyPopulated(innerItem, 'answer[0].valueString')
               ) {
                 validASM = true;
                 break;
